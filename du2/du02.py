@@ -13,8 +13,8 @@ def parseArguments():
 		'Label foreground and background pixels as needed with mouse. ' +
 		'Use "f" and "b" keys to switch to foreground respective background annotation. ' +
 		'Use "space" to update the segmentation. Exit by pressing Escape key.')
-	parser.add_argument('-i', '--image', required=True,
-						help='Image file name.')
+	parser.add_argument('-i', '--image', required=False,
+						help='Image file name.', default="../du1/img.jpg")
 	args = parser.parse_args()
 	return args
 
@@ -168,7 +168,7 @@ def main():
 		# cv2.cv2.GC_PR_BGD and cv2.GC_BGD are assigned False/0.
 		# The source mask is in segmentCB.mask.
 		# FILL
-		#mask = \ UNDO THIS COMMENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		mask = np.where((segmentCB.mask==2)|(segmentCB.mask==0),0,1).astype('uint8')
 
 		# Adding some random foreground noise to mask.
 		positions0 = np.random.random_integers(mask.shape[0] - 1, size=100)
@@ -189,33 +189,62 @@ def main():
 		# erosion followed by dilatation. Use 'kernel'.
 		kernel = np.ones((3, 3), dtype=np.uint8)
 		# FILL
+		mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
 		# Remove small holes in foregound. Use morfological operation close -
 		# dilatation followed by erosion. Use 'kernel'.
-		# FILL
-
+		# FILL			
+		mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 		cv2.imshow('repaired mask', np.uint8(mask) * 255)
-
+		
 		# Mask foreground pixels. Set background to 0.
 		# Use 'mask' and segmentCB.img
 		# FILL
+		maskedForeground = segmentCB.img
+		maskedForeground = cv2.bitwise_and(segmentCB.img, segmentCB.img, mask = mask)
+
 		cv2.imshow('masked foreground', maskedForeground)
 
 		# Distance transform - highlight pixels 20px distant from foreground
-		#distances = \ UNDO THIS COMMENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		distances = cv2.cvtColor(maskedForeground, cv2.COLOR_BGR2GRAY)
+		distances = cv2.distanceTransform(distances, 2, 3, 2)
 
 		distances = np.uint32(distances) == 20
 		cv2.imshow('distance 20', np.uint8(distances) * 255)
-		cv2.waitKey()
+		
 
 		# Compute vertical and horizontal projection of the foreground.
 		# Sum mask pixel in horizontal lines respective vertical columns.
 		# Use matplotlib.pyplot to plot the projection graphs.
 		# Use subplot() to put both graphs into a single window.
 		import matplotlib.pyplot as plt
-		# FILL
 
+		rows = []
+		pos = []
+		for row in range(mask.shape[0]):
+			rows.append(np.sum(mask[row]))
+			pos.append(row)
+
+		plt.subplot(2, 1, 2)	
+		plt.xlabel('Rows')
+		plt.plot(pos, rows)
+		plt.fill_between(pos, 0, rows)
+				
+		
+		cols = []
+		pos2 = []
+		cols = np.sum(mask, axis=0)
+		for col in range(mask.shape[1]):
+			pos2.append(col)
+		plt.subplot(2, 1, 1)	
+		plt.xlabel('Columns')
+		plt.plot(pos2, cols)
+		plt.fill_between(pos2, 0, cols)
+
+		print(rows)
 		plt.show()
+		cv2.waitKey()
+		
 
 	cv2.destroyAllWindows()
 
