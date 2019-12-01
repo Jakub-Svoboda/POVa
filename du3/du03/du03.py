@@ -3,7 +3,7 @@ from __future__ import print_function
 # To plot graphs.
 import numpy as np
 
-import sys
+import sys, os
 
 from tools import collage
 from tools import readCIFAR
@@ -70,7 +70,7 @@ def build_simple_network():
 
 	# FILL
 	model = models.Sequential()
-	model.add(Conv2D(32, (3, 3), strides=(3, 3), input_shape=(32,32,3), activation = "relu"))
+	model.add(Conv2D(8, (3, 3), strides=(1, 1), input_shape=(32,32,3), activation = "relu"))
 	model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
 	model.add(Conv2D(16, (3, 3), strides=(1, 1), activation = "relu"))
 	model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
