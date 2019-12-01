@@ -49,6 +49,7 @@ def getSimilar(queryData, data):
 	# FILL
 	dists = -2 * np.dot(data, queryData.T) + np.sum(queryData**2, axis=1) + np.sum(data**2, axis=1)[:, np.newaxis]
 	sortedMatches = np.argsort(dists)
+	pass
 	return sortedMatches
 
 
@@ -62,6 +63,9 @@ def showFace(image, shape):
 	landmarks = shape.parts()
 
 	# FILL
+	image = cv2.rectangle(image, (bb.left(), bb.top()), (bb.right(), bb.bottom()), color = (255,255,255))
+	for l in landmarks:
+		image = cv2.circle(image, (l.x, l.y), 4,color = (255,255,255))
 
 	cv2.imshow('Detection', image)
 	cv2.waitKey(1)
