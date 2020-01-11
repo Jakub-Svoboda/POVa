@@ -1,6 +1,6 @@
 # POVa
 
-##Homework for the POVa class (Computer vision) at FIT VUTBR.
+### Homework for the POVa class (Computer vision) at FIT VUTBR.
 
 Results:
 * First assignment: 2/2
